@@ -1,0 +1,7 @@
+spring:
+  rabbitmq:
+    addresses: 192.168.0.9:49156
+    username: guest
+    password: guest
+    publisher-confirm-type: correlated
+    publisher-returns: true
