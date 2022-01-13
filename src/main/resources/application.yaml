@@ -5,3 +5,12 @@ spring:
     password: guest
     publisher-confirm-type: correlated
     publisher-returns: true
+    listener:
+      simple:
+        retry:
+          enabled: true
+          max-attempts: 5
+          initial-interval: 500
+          max-interval: 2000
+          multiplier: 2
+        default-requeue-rejected: false

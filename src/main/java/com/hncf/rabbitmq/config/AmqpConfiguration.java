@@ -7,6 +7,8 @@ import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 
 import javax.annotation.Resource;
+import java.util.HashMap;
+import java.util.Map;
 
 /**
  * <p>功能描述：</p>
@@ -64,6 +66,35 @@ public class AmqpConfiguration {
     @Bean
     public Binding directExchangeBindingQueue03(@Qualifier("directExchange") Exchange directExchange,@Qualifier("queue03") Queue queue) throws Exception {
         return BindingBuilder.bind(queue).to(directExchange).with("direct.*").noargs();
+    }
+
+    @Bean
+    public Exchange normalExchange(){
+        return new DirectExchange("normalExchange", true, false);
+    }
+    @Bean
+    public Queue normalQueue() {
+        Map<String, Object> map = new HashMap<>(2);
+        map.put("x-dead-letter-exchange","deadExchange");
+        map.put("x-dead-letter-route-key","deadQueue");
+        return new Queue("normalQueue", true, false, true, map);
+    }
+    @Bean
+    public Binding normalBinding(){
+        return BindingBuilder.bind(normalQueue()).to(normalExchange()).with("normal").noargs();
+    }
+    @Bean
+    public Exchange deadExchange(){
+        return new DirectExchange("deadExchange", true, false);
+    }
+    @Bean
+    public Queue deadQueue() {
+        return  new Queue("deadQueue", true, false, true);
+    }
+
+    @Bean
+    public Binding deadBinding(){
+        return BindingBuilder.bind(deadQueue()).to(deadExchange()).with("normal").noargs();
     }
 
 }

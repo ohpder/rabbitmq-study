@@ -1,5 +1,6 @@
 package com.hncf.rabbitmq.controller;
 
+import com.rabbitmq.client.Channel;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.amqp.core.Correlation;
 import org.springframework.amqp.core.ExchangeTypes;
@@ -14,6 +15,7 @@ import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 
+import java.io.IOException;
 import java.util.concurrent.ExecutionException;
 import java.util.concurrent.atomic.AtomicBoolean;
 
@@ -34,13 +36,15 @@ public class TestController {
     @GetMapping("/01")
     public String test01() throws ExecutionException, InterruptedException {
         // rabbitTemplate.convertAndSend("fanoutExchange","12312","11111111111");
-        CorrelationData correlationData = new CorrelationData("xiang");
+      /*  CorrelationData correlationData = new CorrelationData("xiang");
         rabbitTemplate.convertAndSend("dasd","queuedas01","default....", correlationData);
         SettableListenableFuture<CorrelationData.Confirm> future = correlationData.getFuture();
         CorrelationData.Confirm confirm = future.get();
         if (!confirm.isAck()){
             throw new RuntimeException(confirm.getReason());
-        }
+        }*/
+        rabbitTemplate.convertAndSend("normalExchange","normal","cs111" );
+        
         return "发送成功";
     }
     @RabbitListener(queues = "queue01")
@@ -59,11 +63,9 @@ public class TestController {
     public void queue03(String message){
         log.error("queue03::"+message);
     }
-    @RabbitListener(bindings = @QueueBinding(
-            value = @Queue(
-                    name = "test"
-            ), exchange = @Exchange(name="test")))
-    public void aa(String message){
-        log.error("aa::"+message);
+    @RabbitListener(queues = "normalQueue")
+    public void aa(Message message, Channel channel) throws IOException {
+            // log.error("aa::"+new String(message.getBody()));
+            throw new RuntimeException("111");
     }
 }
